@@ -13,7 +13,7 @@ class Program
     static decimal[] data = new decimal[11000001];
     static decimal result = 0;
     const long CalculationCount = 10000000;
-    const int MaxThreads = 32;
+    const int MaxThreads = 22;
     static int threadCount = 1;
     static decimal[] localResults = Array.Empty<decimal>();
 
