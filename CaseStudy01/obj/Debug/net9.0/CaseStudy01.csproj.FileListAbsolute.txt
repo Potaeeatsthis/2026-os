@@ -32,3 +32,4 @@ D:/Dev/CSharp/OperatingSystems/CaseStudy01/obj/Debug/net9.0/ref/CaseStudy01.dll
 /home/potae/projects/uni-work/os/CaseStudy01/obj/Debug/net9.0/CaseStudy01.pdb
 /home/potae/projects/uni-work/os/CaseStudy01/obj/Debug/net9.0/CaseStudy01.genruntimeconfig.cache
 /home/potae/projects/uni-work/os/CaseStudy01/obj/Debug/net9.0/ref/CaseStudy01.dll
+/home/potae/projects/uni-work/os/CaseStudy01/obj/Debug/net9.0/CaseStudy01.sourcelink.json
