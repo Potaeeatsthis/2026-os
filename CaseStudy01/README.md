@@ -1,10 +1,12 @@
 # Case Study 01: Multithreading
 
+> **Update:** The program now offers two scheduling modes: the existing static-range approach and a new dynamic-chunk approach. See [Dynamic Chunk Scheduling](DYNAMIC_SCHEDULING.md) for the new idea and comparison.
+
 ## 1. Main idea
 
-`CaseStudy01` is a C#/.NET 9 program about **multithreading**. It loads about 11 million numbers from a binary file, performs a large calculation in a worker thread, measures the execution time, and prints the final result.
+`CaseStudy01` is a C#/.NET 9 program about **multithreading**. It loads about 11 million numbers from a binary file, divides a large calculation among worker threads, measures the execution time, and prints the final result.
 
-The program is prepared for an experiment with one or two threads. However, the current version enables only one worker thread. If the second thread is enabled, the program has serious race conditions.
+The detailed analysis below describes the original single-worker version preserved in `Program.cs.orig`. The current `Program.cs` is thread-safe, supports 1–32 workers, and lets the user compare static ranges with dynamic chunks. See [PIPELINE.md](PIPELINE.md) for the static pipeline and [DYNAMIC_SCHEDULING.md](DYNAMIC_SCHEDULING.md) for the new scheduler.
 
 ## 2. Important files
 
