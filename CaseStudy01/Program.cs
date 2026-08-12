@@ -2,78 +2,55 @@
 // Based on Program.cs.orig. Each value is completed before the next value starts.
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using CalculatingFunctions;
 
 class Program
 {
     private const int DataLength = 11_000_001;
     private const int CalculationCount = 10_000_000;
     private const int CalculationRounds = 30;
+    private const decimal ExpectedResult = 4_686_980_924_312m;
 
     // Small chunks let faster P-cores claim more work while slower E-cores claim less.
     private const int ChunkSize = 16_384;
 
-    // For |value| < 5, the original algorithm returns zero. Multiplying it by 0.1
-    // only makes every later round smaller, so the remaining rounds can be skipped.
-    private const double NearZeroThreshold = 5.0;
+    // Under Calculate1's documented rules, values below this magnitude return zero.
+    // Multiplication by 0.1 only makes later rounds smaller, so they can be skipped.
+    private const decimal NearZeroThreshold = 5m;
 
-    private static readonly float[] Data = new float[DataLength];
-    private static double[] localResults = Array.Empty<double>();
+    // Calculate1 requires ref decimal[] and ref long; changing either breaks exact compatibility.
+    private static decimal[] Data = new decimal[DataLength];
+    private static decimal[] localResults = Array.Empty<decimal>();
     private static int[] processedValues = Array.Empty<int>();
     private static int[] processedChunks = Array.Empty<int>();
     private static int nextChunkStart;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private static double CalculateValue(ref float storedValue)
+    private static decimal CalculateValue(CalClass calculator, int index)
     {
-        double value = storedValue;
-        double result = 0.0;
+        decimal result = 0m;
+        long calculatorIndex = index;
 
         for (int round = 0; round < CalculationRounds; round++)
         {
-            if (Math.Abs(value) < NearZeroThreshold)
+            if (Math.Abs(Data[index]) < NearZeroThreshold)
             {
                 break;
             }
 
-            int wholeValue = (int)value;
-            double sum;
-
-            if ((wholeValue & 1) == 0)
-            {
-                sum = value * 0.2;
-            }
-            else if (wholeValue % 3 == 0)
-            {
-                sum = value * 0.3;
-            }
-            else if (wholeValue % 5 == 0)
-            {
-                sum = value * 0.5;
-            }
-            else if (wholeValue % 7 == 0)
-            {
-                sum = value * 0.7;
-            }
-            else
-            {
-                sum = value * 0.1;
-            }
-
-            result += (((long)sum & 1L) == 0)
-                ? Math.Round(sum * 0.5)
-                : Math.Round(-sum * 0.3);
-
-            value *= 0.1;
+            // Calculate1 advances its ref index, so reset it to repeat this same value.
+            calculatorIndex = index;
+            result += calculator.Calculate1(ref Data, ref calculatorIndex);
         }
 
-        storedValue = (float)value;
         return result;
     }
 
     private static void DynamicWorker(object? state)
     {
         int workerId = (int)state!;
-        double localResult = 0.0;
+        CalClass calculator = new();
+        decimal localResult = 0m;
         int localValueCount = 0;
         int localChunkCount = 0;
 
@@ -88,7 +65,7 @@ class Program
             int endIndex = Math.Min(startIndex + ChunkSize, CalculationCount);
             for (int index = startIndex; index < endIndex; index++)
             {
-                localResult += CalculateValue(ref Data[index]);
+                localResult += CalculateValue(calculator, index);
             }
 
             localValueCount += endIndex - startIndex;
@@ -109,7 +86,7 @@ class Program
 
         for (int index = 0; index < Data.Length; index++)
         {
-            Data[index] = reader.ReadSingle() * 36.0f;
+            Data[index] = (decimal)(reader.ReadSingle() * 36.0f);
         }
 
         Console.WriteLine("Data loaded successfully.\n");
@@ -148,7 +125,7 @@ class Program
 
         int workerCount = ReadWorkerCount(availableWorkers);
         Thread[] threads = new Thread[workerCount];
-        localResults = new double[workerCount];
+        localResults = new decimal[workerCount];
         processedValues = new int[workerCount];
         processedChunks = new int[workerCount];
         nextChunkStart = 0;
@@ -172,7 +149,7 @@ class Program
 
         stopwatch.Stop();
 
-        double result = 0.0;
+        decimal result = 0m;
         int totalProcessedValues = 0;
         int totalProcessedChunks = 0;
 
@@ -191,6 +168,12 @@ class Program
             throw new InvalidOperationException(
                 $"Expected {CalculationCount:N0} values, but workers processed " +
                 $"{totalProcessedValues:N0}.");
+        }
+
+        if (result != ExpectedResult)
+        {
+            throw new InvalidOperationException(
+                $"Expected result {ExpectedResult:F2}, but calculated {result:F2}.");
         }
 
         Console.WriteLine(
