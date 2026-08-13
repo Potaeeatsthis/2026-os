@@ -1,0 +1,101 @@
+CASE STUDY 01 - MULTITHREADING BENCHMARK RESULTS
+================================================
+
+Benchmark date: 13 August 2026
+Branch: master
+Commit: 5a6da7a
+Build configuration: Release
+Adjusted-code scheduling mode: Static ranges
+
+
+CPU INFORMATION
+---------------
+
+CPU model: Intel(R) Core(TM) Ultra 7 155H
+Physical cores: 16
+Logical processors/threads: 22
+Sockets: 1
+
+Hybrid core configuration:
+- 6 Performance cores (P-cores)
+  - 2 threads per core using Hyper-Threading
+  - 12 logical processors in total
+  - Maximum frequency reported by the system: up to 4.8 GHz
+
+- 8 Efficient cores (E-cores)
+  - 1 thread per core
+  - 8 logical processors in total
+  - Maximum frequency reported by the system: up to 3.8 GHz
+
+- 2 Low-Power Efficient cores (LP E-cores)
+  - 1 thread per core
+  - 2 logical processors in total
+  - Maximum frequency reported by the system: up to 2.5 GHz
+
+Total: 6 P-cores + 8 E-cores + 2 LP E-cores = 16 physical cores
+       12 P-core threads + 8 E-core threads + 2 LP E-core threads
+       = 22 logical processors
+
+
+BENCHMARK METHOD
+----------------
+
+- The original program was run three times to establish the baseline.
+- The adjusted program was run three times with 2, 4, 8, 16, and 22 threads.
+- Each adjusted run used manually managed threads and static range scheduling.
+- Both programs performed the same workload: 10,000,000 values over 30 rounds.
+- The reported calculation time excludes data-loading time.
+- Speedup was calculated as:
+
+    Original average time / Adjusted average time
+
+
+RESULTS
+-------
+
++---------------------+------------+------------+------------+--------------+----------------------+
+| Configuration       | Run 1 (ms) | Run 2 (ms) | Run 3 (ms) | Average (ms) | Speedup vs. Original |
++---------------------+------------+------------+------------+--------------+----------------------+
+| Original (1 thread) |     20,382 |     21,460 |     21,816 |    21,219.33 |                1.00x |
+| 2 threads           |     10,759 |     11,031 |     11,335 |    11,041.67 |          1.92x faster |
+| 4 threads           |      5,934 |      6,527 |      6,506 |     6,322.33 |          3.36x faster |
+| 8 threads           |      4,147 |      4,293 |      4,160 |     4,200.00 |          5.05x faster |
+| 16 threads          |      2,543 |      2,577 |      2,590 |     2,570.00 |          8.26x faster |
+| 22 threads          |      2,510 |      2,565 |      2,616 |     2,563.67 |          8.28x faster |
++---------------------+------------+------------+------------+--------------+----------------------+
+
+
+SUMMARY
+-------
+
+Fastest average:
+- 22 threads
+- Average time: 2,563.67 ms
+- Speedup: 8.28x faster than the original code
+
+Slowest adjusted thread configuration:
+- 2 threads
+- Average time: 11,041.67 ms
+- Speedup: 1.92x faster than the original code
+
+Fastest individual run:
+- 22 threads, Run 1
+- Time: 2,510 ms
+
+Comparison of 16 and 22 threads:
+- 22 threads was only 6.33 ms, or approximately 0.25%, faster on average.
+- Therefore, their measured performance was nearly identical.
+
+Correctness:
+- Every original and adjusted run produced the same result:
+  4,686,980,924,312.00
+
+
+CONCLUSION
+----------
+
+The adjusted multithreaded code was faster than the original code at every
+tested thread count. Performance improved as the number of threads increased,
+although the improvement became very small between 16 and 22 threads. The
+fastest tested configuration was 22 threads, with an average execution time of
+2,563.67 ms and a speedup of 8.28x over the original code.
