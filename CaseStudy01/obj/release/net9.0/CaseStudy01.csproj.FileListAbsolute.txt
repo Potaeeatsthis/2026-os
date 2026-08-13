@@ -1,0 +1,6 @@
+/home/potae/projects/uni-work/os/CaseStudy01/obj/release/net9.0/CaseStudy01.csproj.AssemblyReference.cache
+/home/potae/projects/uni-work/os/CaseStudy01/obj/release/net9.0/CaseStudy01.GeneratedMSBuildEditorConfig.editorconfig
+/home/potae/projects/uni-work/os/CaseStudy01/obj/release/net9.0/CaseStudy01.AssemblyInfoInputs.cache
+/home/potae/projects/uni-work/os/CaseStudy01/obj/release/net9.0/CaseStudy01.AssemblyInfo.cs
+/home/potae/projects/uni-work/os/CaseStudy01/obj/release/net9.0/CaseStudy01.csproj.CoreCompileInputs.cache
+/home/potae/projects/uni-work/os/CaseStudy01/obj/release/net9.0/CaseStudy01.sourcelink.json
